@@ -1,7 +1,7 @@
 import re
 import socket
 
-import paramiko
+pip import paramiko
 import datetime
 
 socket.getaddrinfo('localhost', 8080)
