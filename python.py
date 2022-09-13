@@ -1,1 +1,1 @@
-print("everything is Ok")
+print(" is Ok")
