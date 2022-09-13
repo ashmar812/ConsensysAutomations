@@ -1,9 +1,3 @@
-import re
-import socket
-
-pip import paramiko
-import datetime
-
 socket.getaddrinfo('localhost', 8080)
 ssh = paramiko.SSHClient()
 hostname = '52.191.129.181'
