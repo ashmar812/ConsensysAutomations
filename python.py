@@ -10,7 +10,7 @@ hostname = '52.191.129.181'
 my_user = 'stark'
 
 logs = []
-my_key_file = ${{ secrets.SSH_PRIVATE_KEY }}
+my_key_file = OS.environ['SSH_PRIVATE_KEY']
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 allowed_delay = 10
 rounds = 0
