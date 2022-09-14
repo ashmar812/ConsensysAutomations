@@ -1,10 +1,16 @@
+import re
+import socket
+
+import paramiko
+import datetime
+
 socket.getaddrinfo('localhost', 8080)
 ssh = paramiko.SSHClient()
 hostname = '52.191.129.181'
 my_user = 'stark'
-
+# ssh -o StrictHostKeyChecking=no stark@52.191.129.181
 logs = []
-my_key_file = OS.environ['SSH_PRIVATE_KEY']
+my_key_file = paramiko.RSAKey.from_private_key_file(r'C:\Users\MohamadAshmar\Downloads\starkware-azure-key.txt')
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 allowed_delay = 10
 rounds = 0
