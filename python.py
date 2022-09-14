@@ -10,7 +10,7 @@ hostname = '52.191.129.181'
 my_user = 'stark'
 # ssh -o StrictHostKeyChecking=no stark@52.191.129.181
 logs = []
-my_key_file = paramiko.RSAKey.from_private_key_file(r'C:\Users\MohamadAshmar\Downloads\starkware-azure-key.txt')
+
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 allowed_delay = 10
 rounds = 0
@@ -18,7 +18,7 @@ rounds = 0
 
 def check(host_name, rounds):
     # pkey should be a PKey object and not a string
-    ssh.connect(host_name, 22, my_user, pkey=my_key_file)
+    ssh.connect(host_name, 22, my_user)
 
     # command to get logs
     stdin, stdout, stderr = ssh.exec_command('docker logs -n 5  committee_committee_1')
