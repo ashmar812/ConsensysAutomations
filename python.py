@@ -30,14 +30,14 @@ def check(host_name:str , rounds:int , key_path:str):
     print("last_log_time_obj", last_log_time_obj)
     print("current_time_obj", current_time_obj)
     print(rounds)
-    if the_difference < allowed_delay:
+    if the_difference > allowed_delay:
         if rounds:
             stdout = ssh.exec_command('echo "fail to restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
         else:
             rounds += 1
             stdout = ssh.exec_command('echo "need restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
             time.sleep(20)
-            check(hostname, rounds, key_path)
+            check(host_name, rounds, key_path)
     else:
         stdout = ssh.exec_command('echo "everything is Ok->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
         stdout = ssh.exec_command('docker container restart committee_committee_1')
