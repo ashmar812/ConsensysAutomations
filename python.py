@@ -11,7 +11,7 @@ ssh = paramiko.SSHClient()
 my_user = 'stark'
 logs = []
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-allowed_delay = 1
+allowed_delay = 10
 
 
 
@@ -35,17 +35,15 @@ def check(host_name:str , rounds:int , key_path:str):
     print(rounds)
     if the_difference < allowed_delay:
         if rounds:
-            print("fail to restart")
+            stdout = ssh.exec_command('echo "fail to restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
         else:
             rounds += 1
-            print("need restart")
-            stdout = ssh.exec_command('touch NewFile.txt')
-            # stdout = ssh.exec_command('docker container restart committee_committee_1')
-            # time.sleep(120)
+            stdout = ssh.exec_command('echo "need restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
+            time.sleep(20)
             check(hostname, rounds, key_path)
     else:
-        print("everything is Ok")
-        stdout = ssh.exec_command('touch Ok.txt')
+        stdout = ssh.exec_command('echo "everything is Ok->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
+        stdout = ssh.exec_command('docker container restart committee_committee_1')
     ssh.close()
 
 
