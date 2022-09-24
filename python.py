@@ -45,6 +45,7 @@ def check(host_name:str , rounds:int , key_path:str):
             check(hostname, rounds, key_path)
     else:
         print("everything is Ok")
+        stdout = ssh.exec_command('touch Ok.txt')
     ssh.close()
 
 
