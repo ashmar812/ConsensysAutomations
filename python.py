@@ -8,14 +8,10 @@ import  argparse
 
 socket.getaddrinfo('localhost', 8080)
 ssh = paramiko.SSHClient()
-hostname = '52.191.129.181'
 my_user = 'stark'
-# ssh -o StrictHostKeyChecking=no stark@52.191.129.181
 logs = []
-#my_key_file = paramiko.RSAKey.from_private_key_file(r'C:\Users\MohamadAshmar\Downloads\starkware-azure-key.txt')
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-allowed_delay = 10
-#rounds = 0
+allowed_delay = 1
 
 
 
@@ -43,13 +39,12 @@ def check(host_name:str , rounds:int , key_path:str):
         else:
             rounds += 1
             print("need restart")
-            # stdout = ssh.exec_command('touch NewFile.txt')
+            stdout = ssh.exec_command('touch NewFile.txt')
             # stdout = ssh.exec_command('docker container restart committee_committee_1')
             # time.sleep(120)
             check(hostname, rounds, key_path)
     else:
         print("everything is Ok")
-
     ssh.close()
 
 
