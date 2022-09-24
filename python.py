@@ -1,9 +1,8 @@
 import re
 import socket
-
+import time
 import paramiko
 import datetime
-
 import  argparse
 
 socket.getaddrinfo('localhost', 8080)
@@ -12,8 +11,6 @@ my_user = 'stark'
 logs = []
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 allowed_delay = 10
-
-
 
 def check(host_name:str , rounds:int , key_path:str):
     # pkey should be a PKey object and not a string
