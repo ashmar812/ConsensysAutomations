@@ -34,13 +34,13 @@ def check(host_name:str , rounds:int , key_path:str):
         if rounds:
             stdout = ssh.exec_command('echo "fail to restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
         else:
+            stdout = ssh.exec_command('docker container restart committee_committee_1')
             rounds += 1
             stdout = ssh.exec_command('echo "need restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
             time.sleep(20)
             check(host_name, rounds, key_path)
     else:
         stdout = ssh.exec_command('echo "everything is Ok->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
-        stdout = ssh.exec_command('docker container restart committee_committee_1')
     ssh.close()
 
 
