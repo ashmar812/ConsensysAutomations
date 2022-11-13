@@ -26,10 +26,11 @@ def check(host_name:str , rounds:int , key_path:str):
     last_log_time_obj = datetime.datetime.strptime(match[len(match) - 1], '%Y-%m-%d %H:%M:%S')
     current_time_obj = datetime.datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S')
     the_difference = (current_time_obj - last_log_time_obj).total_seconds()
-    print(the_difference)
-    print("last_log_time_obj", last_log_time_obj)
-    print("current_time_obj", current_time_obj)
-    print(rounds)
+    print("------------------------------")
+    print("the difference: ",the_difference)
+    print("last_log_time_obj: ", last_log_time_obj)
+    print("current_time_obj: ", current_time_obj)
+    print("rounds: ",rounds)
     if the_difference > allowed_delay:
         if rounds:
             stdout = ssh.exec_command('echo "fail to restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
