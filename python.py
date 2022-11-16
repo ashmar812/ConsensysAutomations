@@ -33,15 +33,18 @@ def check(host_name:str , rounds:int , key_path:str):
     print("rounds: ",rounds)
     if the_difference > allowed_delay:
         if rounds:
+            print("fail to restart  X")
             stdout = ssh.exec_command('echo "fail to restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
         else:
             stdout = ssh.exec_command('docker container restart committee_committee_1')
             rounds += 1
-            stdout = ssh.exec_command('echo "need restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
+            print("restarting......")
+            stdout = ssh.exec_command('echo "need a restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
             time.sleep(20)
             check(host_name, rounds, key_path)
     else:
         stdout = ssh.exec_command('echo "everything is Ok->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
+        print("everything is Ok")
     ssh.close()
 
 
@@ -50,5 +53,4 @@ parser.add_argument("--ssh-path", type=str, required=True)
 parser.add_argument("--hostname", type=str, required=True)
 parser.add_argument("--rounds", type=int, default=0)
 args = parser.parse_args()
-print(f"ssh-path: {args.ssh_path}")
 check(args.hostname, args.rounds, args.ssh_path)
