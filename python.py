@@ -29,8 +29,8 @@ def check(host_name:str , rounds:int , key_path:str):
     print("------------------------------")
     print("last_log_time_obj: ", last_log_time_obj)
     print("current_time_obj: ", current_time_obj)
-    print("the difference: ",the_difference)
-    print("rounds: ",rounds)
+    print("the difference: ",the_difference,"sec")
+    print("restart rounds: ",rounds)
     if the_difference > allowed_delay:
         if rounds:
             print("fail to restart  X")
