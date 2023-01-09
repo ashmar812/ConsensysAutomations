@@ -12,12 +12,12 @@ logs = []
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 allowed_delay = 10
 
-def check(host_name:str , rounds:int , key_path:str):
+def check(host_name:str , rounds:int , key_path:str,container_id:str):
     # pkey should be a PKey object and not a string
     ssh.connect(host_name, 22, my_user, pkey=paramiko.RSAKey.from_private_key_file(key_path))
 
     # command to get logs
-    stdin, stdout, stderr = ssh.exec_command('docker logs -n 5  committee_committee_1')
+    stdin, stdout, stderr = ssh.exec_command(f'docker logs -n 5  {container_id}')
     lines = ((stdout.readlines()).__str__())
     pattern = re.compile(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', re.IGNORECASE)
     match = pattern.findall(lines)
@@ -36,7 +36,7 @@ def check(host_name:str , rounds:int , key_path:str):
             print("fail to restart  X")
             stdout = ssh.exec_command('echo "fail to restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
         else:
-            stdout = ssh.exec_command('docker container restart committee_committee_1')
+            stdout = ssh.exec_command(f'docker container restart {container_id}')
             rounds += 1
             print("restarting......")
             stdout = ssh.exec_command('echo "need a restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
@@ -52,5 +52,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--ssh-path", type=str, required=True)
 parser.add_argument("--hostname", type=str, required=True)
 parser.add_argument("--rounds", type=int, default=0)
+parser.add_argument("--container_id", type=str, required=True)
 args = parser.parse_args()
-check(args.hostname, args.rounds, args.ssh_path)
+check(args.hostname, args.rounds, args.ssh_path,args.container_id)
