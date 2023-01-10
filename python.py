@@ -35,6 +35,7 @@ def check(host_name:str , rounds:int , key_path:str,container_id:str):
         if rounds:
             print("fail to restart  X")
             stdout = ssh.exec_command('echo "fail to restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
+            sys.exit(1)
         else:
             stdout = ssh.exec_command(f'docker container restart {container_id}')
             rounds += 1
