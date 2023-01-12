@@ -42,7 +42,7 @@ def check(host_name:str , rounds:int , key_path:str,container_id:str):
             print("restarting......")
             stdout = ssh.exec_command('echo "need a restart->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
             time.sleep(20)
-            check(host_name, rounds, key_path)
+            check(host_name, rounds, key_path,container_id)
     else:
         stdout = ssh.exec_command('echo "everything is Ok->`date +"%d-%m-%Y+%T"`" >>jenkins_events.txt')
         print("everything is Ok")
