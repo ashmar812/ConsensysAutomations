@@ -33,7 +33,7 @@ az container stop --name $container --resource-group $resource_group
 for i in $(seq 1 $max_retries); do
 	Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	if [ $Status != "Stopped" ] && [ $Status != "Succeeded" ]; then
-		echo "Container group is still transitioning, waiting for $retry_interval seconds before retrying..."
+		echo "Container group is still transitioning, status : $Status, waiting for $retry_interval seconds before retrying..."
 		sleep $retry_interval
 		Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	else
@@ -51,7 +51,7 @@ az container start --name $container --resource-group $resource_group
 for i in $(seq 1 $max_retries); do
 	Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	if [ $Status != "Running" ] && [ $Status != "Succeeded" ]; then
-		echo "Container group is still transitioning, waiting for $retry_interval seconds before retrying..."
+		echo "Container group is still transitioning, status : $Status, waiting for $retry_interval seconds before retrying..."
 		sleep $retry_interval
 		Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	else
