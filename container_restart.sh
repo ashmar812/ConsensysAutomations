@@ -2,7 +2,7 @@
 
 declare -A containers
 Color="$1"
-retry_interval=10 # in seconds
+retry_interval=20 # in seconds
 max_retries=5
 # Add keys and values to the array
 containers=( ["orange"]="az-jpeast-00-dev-ci-orange.dev.japaneast.az.staking.codefi az-jpeast-00-dev-rg az-jpeast-00-dev-agw az-jpeast-00-dev-ci-orange" ["red"]="az-jpeast-00-dev-ci-red.dev.japaneast.az.staking.codefi az-jpeast-00-dev-rg az-jpeast-00-dev-agw az-jpeast-00-dev-ci-red" ["key3"]="container_name3 resourcegroup3 agw3 container3" )
