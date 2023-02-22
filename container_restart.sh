@@ -33,7 +33,7 @@ last_log=$(az container logs --resource-group az-cntrus-00-prod-rg --name az-cnt
 last_log_time=$(date -d "$last_log" +%s)
 
 # Get the current time in Unix epoch time
-current_time=$(date +%s)
+current_time=$(date -u +%s)
 
 # Calculate the difference between the last log time and the current time
 time_diff=$((current_time - last_log_time))
