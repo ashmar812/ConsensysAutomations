@@ -28,16 +28,17 @@ index=$(echo $json_data | jq -r --arg fqdn "$container_name" '.[0].backendAddres
 echo "index of the container in the addresses pool: $index"
 # Remove a container
 
-last_log=$(az container logs --resource-group az-cntrus-00-prod-rg --name az-cntrus-00-prod-ci-blue| tail -1 | cut -d' ' -f1,2)
+last_log=$(az container logs --resource-group az-cntrus-00-prod-rg --name az-cntrus-00-prod-ci-blue --since-time "$(az container show --resource-group az-cntrus-00-prod-rg --name az-cntrus-00-prod-ci-blue --query 'logs[].time' --output tsv | tail -2 | head -1)" --tail 1)
+echo $last_log
 # Convert the last log timestamp to Unix epoch time
 last_log_time=$(date -d "$last_log" +%s)
-
+echo $last_log_time
 # Get the current time in Unix epoch time
 current_time=$(date -u +%s)
-
+echo $current_time
 # Calculate the difference between the last log time and the current time
 time_diff=$((current_time - last_log_time))
-
+echo $time_diff
 # Define a threshold value in seconds (e.g., 60 seconds)
 threshold=60
 
