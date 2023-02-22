@@ -28,11 +28,11 @@ index=$(echo $json_data | jq -r --arg fqdn "$container_name" '.[0].backendAddres
 echo "index of the container in the addresses pool: $index"
 # Remove a container
 
- if [ $index != "null" ]; then
+ if [ -n "$index" ]; then
   az network application-gateway address-pool update -g "$resource_group" --gateway-name "$agw_name" -n signers-pool --remove backendAddresses "$index"
-else
+ else
   echo "ERROR: The variable 'index' is not set or has a null value. Cannot remove backend address."
-fi
+ fi
 
 # Stop container
 az container stop --name $container --resource-group $resource_group
