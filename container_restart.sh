@@ -88,7 +88,7 @@ for i in $(seq 1 $max_retries); do
     echo "Attempt $i of $max_retries"
 
     # Get the log timestamp
-    log_time=$(az container logs --resource-group $resource_group --name $container_instance | tail -2 | head -1 | cut -d' ' -f1,2)
+    log_time=$(az container logs --resource-group $resource_group --name $container | tail -2 | head -1 | cut -d' ' -f1,2)
 
     if [ -z "$log_time" ]; then
         echo "Error: Failed to retrieve container logs"
