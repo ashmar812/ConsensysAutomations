@@ -70,7 +70,7 @@ fi
 
 echo "Add a container"
 az network application-gateway address-pool update -g $resource_group --gateway-name $agw_name -n signers-pool --add backendAddresses fqdn=$container_name
-echo"restart is completed"
+echo "restart is completed"
 
 echo "Waiting for the container to be live"
 # Define the maximum number of retries and wait time in seconds
