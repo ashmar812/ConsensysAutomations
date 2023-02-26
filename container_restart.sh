@@ -33,9 +33,8 @@ echo "index of the container in the addresses pool: $index"
  fi
 
 echo "Stop the container"
-az container stop --name $container --resource-group $resource_group
-
 echo "Wait for the container to stop"
+az container stop --name $container --resource-group $resource_group
 for i in $(seq 1 $max_retries); do
 	Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	if [ $Status != "Stopped" ] && [ $Status != "Succeeded" ]; then
@@ -52,8 +51,8 @@ if [ $Status != "Stopped" ] && [ $Status != "Succeeded" ]; then
 fi
   
 echo "Start container"
-az container start --name $container --resource-group $resource_group
 echo "Wait for the container to start"
+az container start --name $container --resource-group $resource_group
 for i in $(seq 1 $max_retries); do
 	Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	if [ $Status != "Running" ] && [ $Status != "Succeeded" ]; then
@@ -71,11 +70,9 @@ fi
 
 echo "Add a container"
 az network application-gateway address-pool update -g $resource_group --gateway-name $agw_name -n signers-pool --add backendAddresses fqdn=$container_name
-
 echo"restart is completed"
 
 echo "Waiting for the container to be live"
-
 # Define the maximum number of retries and wait time in seconds
 max_retries=5
 wait_time=60
