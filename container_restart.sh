@@ -72,3 +72,48 @@ fi
 echo "Add a container"
 az network application-gateway address-pool update -g $resource_group --gateway-name $agw_name -n signers-pool --add backendAddresses fqdn=$container_name
 
+echo"restart is completed"
+
+echo "Waiting for the container to be live"
+
+# Define the maximum number of retries and wait time in seconds
+max_retries=5
+wait_time=60
+
+# Define the time threshold in seconds for the container to be considered ready
+threshold=60
+
+# Loop through the maximum number of retries
+for i in $(seq 1 $max_retries); do
+    echo "Attempt $i of $max_retries"
+
+    # Get the log timestamp
+    log_time=$(az container logs --resource-group $resource_group --name $container_instance | tail -2 | head -1 | cut -d' ' -f1,2)
+
+    if [ -z "$log_time" ]; then
+        echo "Error: Failed to retrieve container logs"
+        exit 1
+    fi
+
+    # Convert the log timestamp to Unix timestamp format
+    log_unix_timestamp=$(date -d "$log_time" +%s)
+
+    # Get the current Unix timestamp
+    current_unix_timestamp=$(date -u +%s)
+
+    # Calculate the time difference in seconds between the current time and the log time
+    time_diff=$((current_unix_timestamp - log_unix_timestamp))
+
+    # Check if the time difference is less than the threshold
+    if [ $time_diff -lt $threshold ]; then
+        echo "Container is ready!"
+        exit 0
+    else
+        echo "Container is not ready yet. Waiting for $wait_time seconds before retrying..."
+        sleep $wait_time
+    fi
+done
+
+# If the loop completes without finding a ready container, exit with an error message
+echo "Max retries exceeded. Container did not become ready within the specified time."
+exit 1
