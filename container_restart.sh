@@ -74,7 +74,7 @@ echo"restart is completed"
 
 echo "Waiting for the container to be live"
 # Define the maximum number of retries and wait time in seconds
-max_retries=5
+max_retries=8
 wait_time=60
 
 # Define the time threshold in seconds for the container to be considered ready
