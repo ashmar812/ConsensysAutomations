@@ -2,7 +2,7 @@
 
 declare -A containers
 Color="$1"
-retry_interval=20 # in seconds
+retry_interval=60 # in seconds
 max_retries=5
 # Add keys and values to the array
 containers=( ["blue"]="az-cntrus-00-prod-ci-blue.centralus.az.staking.codefi az-cntrus-00-prod-rg az-cntrus-00-prod-agw az-cntrus-00-prod-ci-blue" 
