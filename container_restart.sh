@@ -73,8 +73,8 @@ az network application-gateway address-pool update -g $resource_group --gateway-
 echo "restart is completed"
 
 echo "Waiting for the container to be live"
-# Set the time when the loop should end (in seconds)
-DURATION_IN_SECONDS=300
+# Set the time when the loop should end (in seconds)7 minutes
+DURATION_IN_SECONDS=420
 END_TIME=$(( $(date +%s) + DURATION_IN_SECONDS ))
 
 # Wait time between log checks (in seconds)
