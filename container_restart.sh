@@ -73,44 +73,43 @@ az network application-gateway address-pool update -g $resource_group --gateway-
 echo "restart is completed"
 
 echo "Waiting for the container to be live"
-# Define the maximum number of retries and wait time in seconds
-max_retries=8
-wait_time=60
+# Set the time when the loop should end (in seconds)
+DURATION_IN_SECONDS=300
+END_TIME=$(( $(date +%s) + DURATION_IN_SECONDS ))
 
-# Define the time threshold in seconds for the container to be considered ready
-threshold=60
+# Wait time between log checks (in seconds)
+WAIT_TIME_IN_SECONDS=60
 
-# Loop through the maximum number of retries
-for i in $(seq 1 $max_retries); do
-    echo "Attempt $i of $max_retries"
+# Time difference threshold for considering a log entry (in seconds)
+TIME_DIFF_THRESHOLD=30
 
-    # Get the log timestamp
-    log_time=$(az container logs --resource-group $resource_group --name $container | tail -2 | head -1 | cut -d' ' -f1,2)
+# Loop for the specified duration
+while [ $(date +%s) -lt $END_TIME ]; do
 
-    if [ -z "$log_time" ]; then
-        echo "Error: Failed to retrieve container logs"
-        exit 1
-    fi
+  # Run the az container logs command and retrieve the second-to-last log
+  LOG=$(az container logs --resource-group $resource_group --name $container | tail -n 2 | head -n 1 || true)
 
-    # Convert the log timestamp to Unix timestamp format
-    log_unix_timestamp=$(date -d "$log_time" +%s)
+  # Check if the log contains "200" or "210"
+  if [[ "$LOG" =~ (200|210) ]]; then
 
-    # Get the current Unix timestamp
-    current_unix_timestamp=$(date -u +%s)
-
-    # Calculate the time difference in seconds between the current time and the log time
-    time_diff=$((current_unix_timestamp - log_unix_timestamp))
+    # Get the log time and calculate the difference from the current time in UTC
+    LOG_TIME=${LOG%% *}
+    LOG_TIME_UNIX=$(date -d "$LOG_TIME" +%s)
+    CURRENT_TIME_UNIX=$(date +%s)
+    TIME_DIFF=$(( CURRENT_TIME_UNIX - LOG_TIME_UNIX ))
 
     # Check if the time difference is less than the threshold
-    if [ $time_diff -lt $threshold ]; then
-        echo "Container is ready!"
-        exit 0
-    else
-        echo "Container is not ready yet. Waiting for $wait_time seconds before retrying..."
-        sleep $wait_time
+    if [ $TIME_DIFF -lt $TIME_DIFF_THRESHOLD ]; then
+      echo "Condition met at $(date) and status code is 200"
+      exit 0
     fi
+
+  fi
+
+  # Wait for the specified time before checking again
+  sleep $WAIT_TIME_IN_SECONDS
+
 done
 
-# If the loop completes without finding a ready container, exit with an error message
-echo "Max retries exceeded. Container did not become ready within the specified time."
+echo "Conditions not met within $DURATION_IN_SECONDS seconds"
 exit 1
