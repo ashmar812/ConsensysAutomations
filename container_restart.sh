@@ -3,7 +3,7 @@
 declare -A containers
 Color="$1"
 retry_interval=60 # in seconds
-max_retries=5
+max_retries=7
 # Add keys and values to the array
 containers=( ["blue"]="az-cntrus-00-prod-ci-blue.centralus.az.staking.codefi az-cntrus-00-prod-rg az-cntrus-00-prod-agw az-cntrus-00-prod-ci-blue" 
 	     ["red"]="az-cntrus-00-prod-ci-red.centralus.az.staking.codefi az-cntrus-00-prod-rg az-cntrus-00-prod-agw az-cntrus-00-prod-ci-red" 
@@ -51,8 +51,9 @@ if [ $Status != "Stopped" ] && [ $Status != "Succeeded" ]; then
 fi
   
 echo "Start container"
-echo "Wait for the container to start"
 az container start --name $container --resource-group $resource_group
+echo "Wait for the container to start"
+sleep $retry_interval
 for i in $(seq 1 $max_retries); do
 	Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	if [ $Status != "Running" ] && [ $Status != "Succeeded" ]; then
