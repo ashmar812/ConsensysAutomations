@@ -59,6 +59,7 @@ for i in $(seq 1 $max_retries); do
 	if [ $Status != "Running" ] && [ $Status != "Succeeded" ]; then
 		echo "Container group is still transitioning, status : $Status, waiting for $retry_interval seconds before retrying..."
 		sleep $retry_interval
+		az container start --name $container --resource-group $resource_group
 		Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	else
 		break
@@ -104,13 +105,12 @@ while [[ $(date -u +"%Y-%m-%d %H:%M:%S") < $END_TIME ]]; do
     # Check if the time difference is less than 30 seconds
     if [[ $TIME_DIFF_IN_SECONDS -lt TIME_DIFF_THRESHOLD ]]; then
       echo "The difference between the log's time and the current time in UTC is $TIME_DIFF_IN_SECONDS seconds and status code is 200/210"
-      break
+      exit 0
     else
       echo "The difference between the log's time and the current time in UTC is more than $TIME_DIFF_THRESHOLD seconds,checking agian"
     fi
   fi
 
 done
-
 echo "Conditions not met within $DURATION_IN_MINUTES minutes"
 exit 1
