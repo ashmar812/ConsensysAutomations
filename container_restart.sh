@@ -76,7 +76,7 @@ echo "restart is completed"
 echo "Waiting for the container to be live"
 # Set the time when the loop should end (in seconds)7 minutes
 DURATION_IN_SECONDS=420
-END_TIME=$(( $(date +%s) + DURATION_IN_SECONDS ))
+END_TIME=$(( $(date -u +%s) + DURATION_IN_SECONDS ))
 
 # Wait time between log checks (in seconds)
 WAIT_TIME_IN_SECONDS=60
@@ -85,7 +85,7 @@ WAIT_TIME_IN_SECONDS=60
 TIME_DIFF_THRESHOLD=30
 
 # Loop for the specified duration
-while [ $(date +%s) -lt $END_TIME ]; do
+while [ $(date -u +%s) -lt $END_TIME ]; do
   echo "first sleep"
   # Run the az container logs command and retrieve the second-to-last log
   LOG=$(az container logs --resource-group $resource_group --name $container | tail -n 2 | head -n 1 || true)
@@ -96,14 +96,14 @@ while [ $(date +%s) -lt $END_TIME ]; do
     # Get the log time and calculate the difference from the current time in UTC
     LOG_TIME=${LOG%% *}
     LOG_TIME_UNIX=$(date -d "$LOG_TIME" +%s)
-    echo "LOG_TIME_UNIX: $LOG_TIME_UNIX"
-    CURRENT_TIME_UNIX=$(date +%s)
-    echo "CURRENT_TIME_UNIX: $CURRENT_TIME_UNIX"
+    echo "LOG_TIME_UNIX: $(date -d "$LOG_TIME" )"
+    CURRENT_TIME_UNIX=$(date -u +%s)
+    echo "CURRENT_TIME_UNIX: $(date -u)"
     TIME_DIFF=$(( CURRENT_TIME_UNIX - LOG_TIME_UNIX ))
     echo "TIME_DIFF: $TIME_DIFF"
     # Check if the time difference is less than the threshold
     if [ $TIME_DIFF -lt $TIME_DIFF_THRESHOLD ]; then
-      echo "Condition met at $(date) and status code is 200"
+      echo "Condition met at $(date -u) and status code is 200"
       exit 0
     fi
 
