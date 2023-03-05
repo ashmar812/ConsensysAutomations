@@ -75,14 +75,13 @@ echo "restart is completed"
 
 echo "Waiting for the container to be live"
 # Set the time when the loop should end (in seconds)7 minutes
-DURATION_IN_MINUTES=7
+DURATION_IN_MINUTES=10
 END_TIME=$(date -u -d "+ $DURATION_IN_MINUTES minutes" +"%Y-%m-%d %H:%M:%S")
-echo $END_TIME
 # Wait time between log checks (in seconds)
 WAIT_TIME_IN_SECONDS=60
 
 # Time difference threshold for considering a log entry (in seconds)
-TIME_DIFF_THRESHOLD=30000
+TIME_DIFF_THRESHOLD=30
 
 # Loop for the specified duration
 while [[ $(date -u +"%Y-%m-%d %H:%M:%S") < $END_TIME ]]; do
@@ -96,23 +95,22 @@ while [[ $(date -u +"%Y-%m-%d %H:%M:%S") < $END_TIME ]]; do
     LOG_TIME=$(echo $LOG | awk '{print $1" "$2}')
     # Get the current time in UTC format
     CURRENT_TIME=$(date -u +"%Y-%m-%d %H:%M:%S.%3N+00:00")
-
+    CURRENT_TIME_IN_SECONDS=$(date -u -d "$CURRENT_TIME" +"%s")
     # Convert the log's time to UTC format
     LOG_TIME_UTC=$(date -u -d "$LOG_TIME" +"%Y-%m-%d %H:%M:%S.%3N+00:00")
-
-    # Calculate the difference between the two times in seconds using awk
-    TIME_DIFF=$(echo "$(date -u -d "$CURRENT_TIME" +"%s.%N") - $(date -u -d "$LOG_TIME_UTC" +"%s.%N")" | awk '{printf "%.0f\n", $1 * 1000}')
+    LOG_TIME_IN_SECONDS=$(date -u -d "$LOG_TIME_UTC" +"%s")
+    TIME_DIFF_IN_SECONDS=$((CURRENT_TIME_IN_SECONDS - LOG_TIME_IN_SECONDS))
 
     # Check if the time difference is less than 30 seconds
-    if [[ $TIME_DIFF -lt TIME_DIFF_THRESHOLD ]]; then
-      echo "The difference between the log's time and the current time in UTC is less than 30 seconds and status code is 200/210"
+    if [[ $TIME_DIFF_IN_SECONDS -lt TIME_DIFF_THRESHOLD ]]; then
+      echo "The difference between the log's time and the current time in UTC is $TIME_DIFF_IN_SECONDS seconds and status code is 200/210"
       break
     else
-      echo "The difference between the log's time and the current time in UTC is more than 30 seconds,checking agian"
+      echo "The difference between the log's time and the current time in UTC is more than $TIME_DIFF_THRESHOLD seconds,checking agian"
     fi
   fi
 
 done
 
-echo "Conditions not met within $DURATION_IN_SECONDS seconds"
+echo "Conditions not met within $DURATION_IN_MINUTES minutes"
 exit 1
