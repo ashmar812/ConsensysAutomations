@@ -59,7 +59,6 @@ for i in $(seq 1 $max_retries); do
 	if [ $Status != "Running" ] && [ $Status != "Succeeded" ]; then
 		echo "Container group is still transitioning, status : $Status, waiting for $retry_interval seconds before retrying..."
 		sleep $retry_interval
-		az container start --name $container --resource-group $resource_group
 		Status=$(az container show --name $container --resource-group $resource_group --query "instanceView.state");Status=${Status//\"}
 	else
 		break
