@@ -31,7 +31,7 @@ echo "index of the container in the addresses pool: $index"
  else
   echo "ERROR: The variable 'index' is not set or has a null value. Cannot remove backend address."
  fi
-
+echo"Update Application Gateway:done"
 echo "Stop the container"
 echo "Wait for the container to stop"
 az container stop --name $container --resource-group $resource_group
@@ -49,9 +49,12 @@ if [ $Status != "Stopped" ] && [ $Status != "Succeeded" ]; then
 	echo "Maximum number of retries reached, giving up."
 	exit 1
 fi
-  
+echo "stop the container:done"  
+if [ $Status != "Succeeded" ]; then
+	sleep $retry_interval
+	sleep $retry_interval
+fi
 echo "Start container"
-sleep $retry_interval
 az container start --name $container --resource-group $resource_group
 echo "Wait for the container to start"
 for i in $(seq 1 $max_retries); do
@@ -68,9 +71,10 @@ if [ $Status != "Running" ] && [ $Status != "Succeeded" ]; then
 	echo "Maximum number of retries reached, giving up."
 	exit 1
 fi
-
+echo "start the container:done" 
 echo "Add a container"
 az network application-gateway address-pool update -g $resource_group --gateway-name $agw_name -n signers-pool --add backendAddresses fqdn=$container_name
+echo"Update Application Gateway:done"
 echo "restart is completed"
 
 echo "Waiting for the container to be live"
@@ -87,6 +91,7 @@ TIME_DIFF_THRESHOLD=30
 while [[ $(date -u +"%Y-%m-%d %H:%M:%S") < $END_TIME ]]; do
   # Wait for the specified time before checking again
   sleep $WAIT_TIME_IN_SECONDS
+  echo"Waiting"
   # Run the az container logs command and retrieve the second-to-last log
   LOG=$(az container logs --resource-group $resource_group --name $container | tail -n 2 | head -n 1 || true)
 
