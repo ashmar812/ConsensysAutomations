@@ -1,0 +1,33 @@
+name: Container Restart
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  restart-container:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Choose Color
+        id: choose_color
+        run: |
+          echo "::set-output name=color::$( \
+            echo -e 'red\nblue\ngreen' | \
+            fzf --header 'Choose a color:' \
+          )"
+      - name: Log in to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.CLIENT_ID }}",
+              "clientSecret": "${{ secrets.CLIENT_SECRET }}",
+              "tenantId": "${{ secrets.TENANT_ID }}"
+            }
+      - name: Make Script Executable
+        run: chmod +x container_restart.sh
+      - name: Execute Script
+        run: ./container_restart.sh ${{ steps.choose_color.outputs.color }}
+      - name: Print Triggerer
+        run: echo "Triggered by: ${{ github.actor }}"
