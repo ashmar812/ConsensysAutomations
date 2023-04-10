@@ -1,4 +1,4 @@
-name: Container Restart
+name: Staking Automation Workflow
 
 on:
   push:
@@ -7,28 +7,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  restart-container:
+  staking-automation:
     runs-on: ubuntu-latest
     steps:
-      - name: Choose Color
-        id: choose_color
-        run: |
-          echo "::set-output name=color::$( \
-            echo -e 'red\nblue\ngreen' | \
-            fzf --header 'Choose a color:' \
-          )"
-      - name: Log in to Azure CLI
-        uses: azure/login@v1
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Set up Python environment
+        uses: actions/setup-python@v2
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.CLIENT_ID }}",
-              "clientSecret": "${{ secrets.CLIENT_SECRET }}",
-              "tenantId": "${{ secrets.TENANT_ID }}"
-            }
-      - name: Make Script Executable
-        run: chmod +x container_restart.sh
-      - name: Execute Script
-        run: ./container_restart.sh ${{ steps.choose_color.outputs.color }}
-      - name: Print Triggerer
-        run: echo "Triggered by: ${{ github.actor }}"
+          python-version: 3.8
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Run staking automation script
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          RPC_PASSWORD: ${{ secrets.RPC_PASSWORD }}
+        run: python staking_automation.py
+      - name: Notify on completion
+        if: always()
+        uses: joelwmale/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          directory: /
+          commit_message: 'Update staking data'
+          author_name: 'GitHub Actions'
+          author_email: 'actions@github.com'
+          push_message: 'Update staking data'
